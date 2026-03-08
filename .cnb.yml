@@ -21,6 +21,10 @@ $:
                 script:
                     - npm install -g @anthropic-ai/claude-code
                     - echo "claude安装完成"
+              - name: 安装codebuddy
+                script:
+                    - npm install -g @tencent-ai/codebuddy-code
+                    - echo "codebuddy安装完成"
               - name: 安装sudo更新APT源
                 script:
                     - sudo apt-get update
@@ -36,6 +40,13 @@ $:
                     - mkdir -p /root/.iflow
                     - curl -o /root/.iflow/settings.json https://astrbot.mizhoubaobei.top/1.json
                     - echo "已下载并替换 /root/.iflow/settings.json"
+              - name: 创建codebuddy配置文件夹
+                script:
+                    - mkdir -p root/.codebuddy
+                    - curl -o root/.codebuddy/models.json https://astrbot.mizhoubaobei.top/astrbot.json
+                    - echo "已创建 root/.codebuddy 文件夹并下载 models.json"
+                
+              
               - name: 安装iflow智能体
                 script:
                     - chmod +x /workspace/install_agents.sh
