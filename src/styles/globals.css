@@ -1,3 +1,29 @@
+/**
+ * 全局样式文件
+ * 定义应用的全局 CSS 变量、主题和基础样式
+ * 
+ * 功能：
+ * - 导入 Tailwind CSS 框架
+ * - 定义颜色变量（背景色、前景色）
+ * - 定义主题内联变量（颜色、字体）
+ * - 支持深色模式（自动适配系统颜色偏好）
+ * - 定义 body 元素的基础样式
+ * - 定义动画关键帧（扫描线效果）
+ * 
+ * CSS 变量：
+ * - --background: 背景色（浅色模式：#ffffff，深色模式：#0a0a0a）
+ * - --foreground: 前景色（浅色模式：#171717，深色模式：#ededed）
+ * 
+ * 主题变量：
+ * - --color-background: 映射到 background 变量
+ * - --color-foreground: 映射到 foreground 变量
+ * - --font-sans: 无衬线字体
+ * - --font-mono: 等宽字体
+ * 
+ * 动画：
+ * - scan: 扫描线动画，从上到下移动（用于 404 页面效果）
+ */
+
 @import "tailwindcss";
 
 :root {
@@ -23,4 +49,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }

@@ -3,11 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
-  // 当执行 `next build` 时，将网站静态导出到 `out` 目录
-  output: 'export',
   images: {
-    // 静态导出模式下禁用默认 Image Optimization，否则 `next build` 会报错
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -35,6 +31,11 @@ const nextConfig: NextConfig = {
     }
     // 生产 / 静态导出模式下不需要 rewrites
     return [];
+  },
+
+  // 明确指定 Turbopack 根目录，避免锁文件检测警告
+  turbopack: {
+    root: __dirname,
   },
 };
 

@@ -1,3 +1,36 @@
+/**
+ * 模型选择下拉框组件
+ * 提供按平台分组的模型选择界面
+ * 
+ * 功能：
+ * - 按平台分组显示模型列表
+ * - 支持展开/收起平台分组
+ * - 显示当前选中的模型
+ * - 禁用模型的点击提示
+ * - 点击外部自动关闭下拉框
+ * - 滚动支持（最大高度限制）
+ * - 平台间分隔线
+ * 
+ * Props：
+ * - models: 模型选项列表
+ * - selected: 当前选中的模型 ID
+ * - onSelect: 模型选择回调函数
+ * - disabled: 是否禁用整个下拉框
+ * 
+ * ModelOption 接口：
+ * - id: 模型唯一标识
+ * - name: 模型显示名称
+ * - value: 模型值（用于 API 调用）
+ * - platform: 所属平台
+ * - disabled: 是否禁用该模型
+ * 
+ * 特性：
+ * - 使用 TDesign React 的 Dialog 组件显示提示信息
+ * - 响应式设计，支持深色模式
+ * - 自动过滤已禁用的模型，不显示没有可用模型的平台
+ * - 选中模型高亮显示
+ */
+
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Dialog, Tooltip } from 'tdesign-react';
 
@@ -88,7 +121,7 @@ export default function ModelDropdown({ models, selected, onSelect, disabled }: 
         disabled={disabled}
         className={`w-full px-3 py-2 border rounded-lg flex items-center justify-between bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none ${disabled ? 'opacity-50 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500'}`}
       >
-        <span>{current?.name || 'Select model'}</span>
+        <span>{current?.name || '选择模型'}</span>
         <svg
           className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -163,16 +196,16 @@ export default function ModelDropdown({ models, selected, onSelect, disabled }: 
 
       {/* Info Dialog */}
       <Dialog
-        header="Demo Version Limitations"
+        header="演示版限制"
         visible={dialogVisible}
         onClose={() => setDialogVisible(false)}
         onConfirm={() => setDialogVisible(false)}
-        confirmBtn="Got it"
+        confirmBtn="知道了"
         cancelBtn={null}
       >
-        Please go to <span className="font-semibold">EdgeOne Pages</span> to&nbsp;
-        <a href="https://edgeone.ai/pages/new?from=template&template=image-generator-starter" target="_blank" className="text-blue-600 font-semibold">deploy</a>
-        &nbsp; your website and explore enhanced features (activate image generation features by going to the AI platform).
+        请前往 <span className="font-semibold">EdgeOne Pages</span> &nbsp;
+        <a href="https://edgeone.ai/pages/new?from=template&template=image-generator-starter" target="_blank" className="text-blue-600 font-semibold">部署</a>
+        &nbsp; 您的网站并探索增强功能（前往 AI 平台激活图像生成功能）。
       </Dialog>
     </div>
   );

@@ -1,3 +1,38 @@
+/**
+ * 图像生成器主页组件
+ * 提供用户界面用于输入提示词并生成 AI 图像
+ * 
+ * 功能：
+ * - 文本输入框：用户输入图像描述提示词
+ * - 模型选择器：选择不同的 AI 图像生成模型
+ * - 图像生成：调用后端 API 生成图像
+ * - 图像展示：显示生成的图像结果
+ * - 图像下载：支持下载生成的图像
+ * - 示例提示词：提供预设的示例提示词供快速使用
+ * - 加载状态：显示生成进度和耗时
+ * - 错误处理：显示生成失败的错误信息
+ * 
+ * 支持的平台：
+ * - ModelScope：通过 /api/v1/modelscope/:modelId API 端点调用
+ * 
+ * 支持的模型：
+ * - Z-Image：基于 Gradio API 的图像生成模型
+ * 
+ * 状态管理：
+ * - inputValue：输入的提示词文本
+ * - selectedModel：当前选择的模型
+ * - generatedImages：生成的图像列表
+ * - isGenerating：是否正在生成图像
+ * - elapsedSeconds：生成耗时
+ * - imageLoadError：图像加载错误状态
+ * 
+ * API 调用：
+ * - 开发环境：POST /api/v1/modelscope/:modelId，GET /api/v1/token-status
+ * - 生产环境（Node Functions）：POST /v1/modelscope/:id，GET /v1/token-status
+ */
+
+'use client';
+
 import Image from "next/image";
 import { useState, useRef, useEffect, useMemo } from "react";
 import ModelDropdown from "../components/ModelDropdown";
@@ -15,32 +50,36 @@ interface GeneratedImage {
 }
 
 const platform = {
-  id: 'huggingface',
-  name: 'Hugging Face',
+  id: 'modelscope',
+  name: 'ModelScope',
 };
 
 // Base model definitions
-const baseModels = [
-  { id: 'blackschnell', name: 'black-forest-labs/flux-schnell', value: "black-forest-labs/flux-schnell", platform: 'Nebius', disabled: false },
-  { id: 'sdxl', name: 'stabilityai/stable-diffusion-xl-base-1.0', value: "stability-ai/sdxl",  platform: 'Nebius', disabled: false},
-  { id: 'google-imagen-4', name: 'google/imagen-4', value: "google/imagen-4", platform: 'Replicate', disabled: false},
-  { id: 'flux-1-1-pro', name: 'flux-1.1-pro', value: "flux-1.1-pro", platform: 'Replicate', disabled: false},
-  { id: 'fal-hidream-i1-full', name: 'FAL HiDream I1 Full', value: "fal-hidream-i1-full", platform: 'FAL', disabled: false},
-  { id: 'fal-fast-sdxl', name: 'FAL Fast SDXL', value: "fal-fast-sdxl", platform: 'FAL', disabled: false},
-  { id: 'dall-e-2', name: 'DALL-E 2', value: "dall-e-2", platform: 'OpenAI', disabled: false},
-  { id: 'dall-e-3', name: 'DALL-E 3', value: "dall-e-3", platform: 'OpenAI', disabled: false},
-  { id: 'pixelxl', name: 'nerijs/pixel-art-xl', value: "nerijs/pixel-art-xl", platform: 'Hugging Face', disabled: false},
-  { id: 'hidreamfull1', name: 'HiDream-ai/HiDream-I1-Full', value: "HiDream-ai/HiDream-I1-Full", platform: 'Hugging Face', disabled: false},
+const baseModels: Array<{ id: string; name: string; value: string; platform: string; disabled: boolean }> = [
+  { id: 'z-image', name: 'Z-Image', value: 'z-image', platform: 'ModelScope', disabled: false },
 ];
+
+/**
+ * 获取 API 基础路径
+ * 开发环境使用 /api/v1/，生产环境（Edge Functions）使用 /v1/
+ */
+function getApiBasePath() {
+  // 在开发环境中，使用 Next.js API Routes
+  if (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+    return '/api/v1';
+  }
+  // 生产环境使用 Edge Functions
+  return '/v1';
+}
 
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>('black-forest-labs/flux-schnell');
+  const [selectedModel, setSelectedModel] = useState<string>('z-image');
   const [isGenerating, setIsGenerating] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isClient, setIsClient] = useState(false);
-  const [displayPlatformName, setDisplayPlatformName] = useState<string>('Hugging Face');
+  const [displayPlatformName, setDisplayPlatformName] = useState<string>('ModelScope');
 
   // Token availability states (default false, updated after API call)
   const [hasHfToken, setHasHfToken] = useState<boolean>(false);
@@ -54,7 +93,7 @@ export default function Home() {
 
   // Fetch token presence once on mount
   useEffect(() => {
-    fetch('/v1/token-status')
+    fetch(`${getApiBasePath()}/token-status`)
       .then(async (res) => {
         try {
           if (!res.ok) {
@@ -90,25 +129,9 @@ export default function Home() {
       if (m.platform === 'Hugging Face') {
         disabled = !hasHfToken;
       }
-      if (m.platform === 'Nebius') {
-        disabled = !hasNebiusToken;
-      }
-      if (m.platform === 'Replicate') {
-        disabled = !hasReplicateToken;
-      }
-      if (m.platform === 'OpenAI') {
-        disabled = !hasOpenaiToken;
-      }
-      if (m.platform === 'FAL') {
-        disabled = !hasFalToken;
-      }
-      // Always disable if in disabledList
-      // if (disabledList.includes(m.id)) {
-      //   disabled = true;
-      // }
       return { ...m, disabled };
     });
-  }, [hasHfToken, hasNebiusToken, hasReplicateToken, hasOpenaiToken, hasFalToken]);
+  }, [hasHfToken]);
 
   useEffect(() => {
     setIsClient(true);
@@ -116,18 +139,7 @@ export default function Home() {
 
   // Update display platform when selected model changes
   useEffect(() => {
-    const modelInfo = models.find((m) => m.id === selectedModel);
-    if (modelInfo?.platform === 'Nebius') {
-      setDisplayPlatformName('Nebius');
-    } else if (modelInfo?.platform === 'Replicate') {
-      setDisplayPlatformName('Replicate');
-    } else if (modelInfo?.platform === 'OpenAI') {
-      setDisplayPlatformName('OpenAI');
-    } else if (modelInfo?.platform === 'FAL') {
-      setDisplayPlatformName('FAL');
-    } else {
-      setDisplayPlatformName('Hugging Face');
-    }
+    setDisplayPlatformName('ModelScope');
   }, [selectedModel]);
 
   // Generation timer
@@ -193,15 +205,14 @@ export default function Home() {
 
     try {
       // Call backend API to generate image
-      const res = await fetch('/v1/generate', {
+      const res = await fetch(`${getApiBasePath()}/modelscope/${modelInfo.value}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          image: `${prompt} (${modelInfo.name} style)`,
-          platform: platform.id,
-          model: modelInfo.value || selectedModel,
+          prompt: prompt,
+          resolution: '1:1'
         })
       });
 
@@ -210,7 +221,6 @@ export default function Home() {
         data = await res.json();
       } catch (jsonError) {
         console.error('JSON parsing error:', jsonError);
-        // 如果 JSON 解析失败，尝试获取响应文本
         const responseText = await res.text();
         console.error('Response text:', responseText);
         
@@ -226,55 +236,45 @@ export default function Home() {
       }
       
       if (!res.ok || data.error) {
-        // API returned an error
         const errorMessage = data.error || `HTTP error: ${res.status}`;
-        const errorDetails = data.details ? `\nDetails: ${data.details}` : '';
         
         setGeneratedImages([
           {
             ...loadingImage,
             imageUrl: '',
             isLoading: false,
-            error: `${errorMessage}${errorDetails}`,
+            error: errorMessage,
+          },
+        ]);
+      } else if (data.imageData) {
+        let imageUrl;
+        if (typeof data.imageData === 'string' && data.imageData.startsWith('http')) {
+          imageUrl = data.imageData;
+        } else {
+          imageUrl = `data:image/png;base64,${data.imageData}`;
+        }
+        
+        setGeneratedImages([
+          {
+            ...loadingImage,
+            imageUrl: imageUrl,
+            isLoading: false,
+            error: undefined,
           },
         ]);
       } else {
-        if (data.imageData) {
-          // Check if imageData is a URL or base64 data
-          let imageUrl;
-          if (typeof data.imageData === 'string' && data.imageData.startsWith('http')) {
-            // It's a URL, use directly
-            imageUrl = data.imageData;
-          } else {
-            // It's base64 data, add data URL prefix
-            imageUrl = `data:image/png;base64,${data.imageData}`;
-          }
-          
-          setGeneratedImages([
-            {
-              ...loadingImage,
-              imageUrl: imageUrl,
-              isLoading: false,
-              error: undefined,
-            },
-          ]);
-        } else {
-          // No image data returned; treat as an error instead of showing a random placeholder
-          setGeneratedImages([
-            {
-              ...loadingImage,
-              imageUrl: '',
-              isLoading: false,
-              error: data.error || 'No image was returned by the API',
-            },
-          ]);
-        }
+        setGeneratedImages([
+          {
+            ...loadingImage,
+            imageUrl: '',
+            isLoading: false,
+            error: 'No image was returned by the API',
+          },
+        ]);
       }
-
     } catch (error) {
       console.error(`${displayPlatformName} generation failed:`, error);
       
-      // When generation fails, show an error card
       setGeneratedImages([{
         ...loadingImage,
         imageUrl: '',
@@ -362,9 +362,9 @@ export default function Home() {
   };
 
   const examplePrompts = [
-    "A cute orange kitten playing in a garden",
-    "A futuristic city night scene with neon lights", 
-    "A surrealist scene of floating books in a starry night sky above a sleeping child",
+    "一只可爱的橙色小猫在花园里玩耍",
+    "未来城市夜景，霓虹灯闪烁", 
+    "超现实主义场景：星空下漂浮的书籍，下方沉睡的孩子",
   ];
 
   return (
@@ -374,14 +374,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 128 128"><path fill="oklch(62.7% .265 303.9)" d="M105.33 1.6H22.67A22.64 22.64 0 0 0 0 24.27v79.46a22.64 22.64 0 0 0 22.67 22.67h82.66A22.64 22.64 0 0 0 128 103.73V24.27A22.64 22.64 0 0 0 105.33 1.6m-27.09 88H67.09a.82.82 0 0 1-.85-.59l-4.37-12.74H42L38 88.8a.93.93 0 0 1-1 .75H27c-.58 0-.74-.32-.58-1l17.1-49.4c.16-.54.32-1.12.53-1.76a18 18 0 0 0 .32-3.47a.54.54 0 0 1 .43-.59h13.81c.43 0 .64.16.7.43l19.46 54.93c.16.59 0 .86-.53.86Zm18.4-.6c0 .59-.21.85-.69.85H85.49a.75.75 0 0 1-.8-.85V47.89c0-.53.22-.74.7-.74H96c.48 0 .69.26.69.74Zm-1.12-48.2a6.3 6.3 0 0 1-4.85 1.87a6.6 6.6 0 0 1-4.75-1.87a6.87 6.87 0 0 1-1.81-4.91A6.23 6.23 0 0 1 86 31.15a6.8 6.8 0 0 1 4.74-1.87a6.4 6.4 0 0 1 4.86 1.87a6.75 6.75 0 0 1 1.76 4.74a6.76 6.76 0 0 1-1.84 4.91M58.67 65.44H45.12c.8-2.24 1.6-4.75 2.35-7.47s1.65-5.33 2.45-7.89a65 65 0 0 0 1.81-6.88h.11c.37 1.28.75 2.67 1.17 4.16s.91 3.09 1.44 4.75s1 3.25 1.55 4.9s1 3.15 1.44 4.59s.91 2.72 1.23 3.84"/></svg>
-            <span className="text-gray-800 dark:text-white text-xl font-semibold">Image Generator</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 128 128"><path fill="oklch(62.7% .265 303.9)" d="M105.33 1.6H22.67A22.64 22.64 0 0 0 0 24.27v79.46a22.64 22.64 0 0 0 22.67 22.67h82.66A22.64 22.64 0 0 0 128 103.73V24.27A22.64 22.64 0 0 0 105.33 1.6m-27.09 88H67.09a.82.82 0 0 1-.85-.59l-4.37-12.74H42L38 88.8a.93.93 0 0 1-1 .75H27c-.58 0-.74-.32-.58-1l17.1-49.4c.16-.54.32-1.12.53-1.76a18 18 0 0 0 .32-3.47a.54._a 0 0 1 .43-.59h13.81c.43 0 .64.16.7.43l19.46 54.93c.16.59 0 .86-.53.86Zm18.4-.6c0 .59-.21.85-.69.85H85.49a.75.75 0 0 1-.8-.85V47.89c0-.53.22-.74.7-.74H96c.48 0 .69.26.69.74Zm-1.12-48.2a6.3 6.3 0 0 1-4.85 1.87a6.6 6.6 0 0 1-4.75-1.87a6.87 6.87 0 0 1-1.81-4.91A6.23 6.23 0 0 1 86 31.15a6.8 6.8 0 0 1 4.74-1.87a6.4 6.4 0 0 1 4.86 1.87a6.75 6.75 0 0 1 1.76 4.74a6.76 6.6 0 0 1-1.84 4.91M58.67 65.44H45.12c.8-2.24 1.6-4.75 2.35-7.47s1.65-5.33 2.45-7.89a65 65 0 0 0 1.81-6.88h.11c.37 1.28.75 2.67 1.17 4.16s.91 3.09 1.44 4.75s1 3.25 1.55 4.9s1 3.15 1.44 4.59s.91 2.72 1.23 3.84"/></svg>
+            <span className="text-gray-800 dark:text-white text-xl font-semibold">图像生成器</span>
           </div>
 
           {/* Navigation links */}
           <nav className="hidden md:flex items-center space-x-6 text-gray-600 dark:text-gray-300 text-sm">
             <a
-              href="https://github.com/q153877011/image-generator-starter"
+              href="https://github.com/xiaomizhoubaobei/image-generator-starter"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -413,7 +413,7 @@ export default function Home() {
              {/* Text Input Card */}
              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                 Image Description
+                 图像描述
                </h2>
                
                <form onSubmit={handleSubmit} className="space-y-4">
@@ -421,7 +421,7 @@ export default function Home() {
                    <textarea
                      value={inputValue}
                      onChange={(e) => setInputValue(e.target.value)}
-                     placeholder="Describe the image you want, e.g. A cute orange kitten playing in a garden..."
+                     placeholder="描述您想要的图像，例如：一只可爱的小猫在花园里玩耍..."
                      className="w-full px-4 py-3 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200"
                      rows={4}
                      onKeyDown={(e) => {
@@ -435,7 +435,7 @@ export default function Home() {
                  
                  <div className="flex items-start justify-between">
                    <div className="text-sm text-gray-500 dark:text-gray-400 self-start">
-                     Press Enter to generate, Shift + Enter for newline
+                     按 Enter 生成，Shift + Enter 换行
                    </div>
                    <button
                      type="submit"
@@ -445,14 +445,14 @@ export default function Home() {
                      {isGenerating ? (
                        <>
                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                         <span>Generating...</span>
+                         <span>生成中...</span>
                        </>
                      ) : (
                        <>
                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                          </svg>
-                         <span>Generate</span>
+                         <span>生成</span>
                        </>
                      )}
                    </button>
@@ -462,7 +462,7 @@ export default function Home() {
                {/* Example Prompts */}
                <div className="mt-6">
                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Example Prompts:
+                  示例提示词：
                  </h3>
                  <div className="grid grid-cols-1 gap-2">
                    {examplePrompts.map((prompt, index) => (

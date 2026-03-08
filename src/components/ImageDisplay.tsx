@@ -1,3 +1,36 @@
+/**
+ * 图像显示组件
+ * 用于展示 AI 生成的图像结果
+ * 
+ * 功能：
+ * - 显示生成的图像（支持加载状态和错误状态）
+ * - 显示加载进度和耗时
+ * - 支持下载生成的图像
+ * - 显示图像元数据（平台、模型、生成时间）
+ * - 图像加载错误处理和重试功能
+ * - 鼠标悬停时显示下载按钮
+ * 
+ * Props：
+ * - generatedImages: 生成的图像列表
+ * - isClient: 是否在客户端渲染
+ * - elapsedSeconds: 生成耗时
+ * - imageLoading: 图像下载加载状态
+ * - imageLoadError: 图像加载错误状态
+ * - displayPlatformName: 显示的平台名称
+ * - onDownload: 下载图像回调函数
+ * - onRetry: 重试加载图像回调函数
+ * - onImageLoad: 图像加载成功回调
+ * - onImageError: 图像加载失败回调
+ * - getImageFormat: 获取图像格式的函数
+ * - generateFilename: 生成文件名的函数
+ * 
+ * 显示状态：
+ * - 空状态：显示"等待图像生成"提示
+ * - 加载中：显示加载动画和耗时
+ * - 成功：显示图像和下载按钮
+ * - 错误：显示错误信息和重试按钮
+ */
+
 import React from 'react';
 import Image from 'next/image';
 
@@ -46,11 +79,11 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-4 rounded-t-xl">
         <h2 className="text-lg font-bold text-white">
-          Generation Result
+          生成结果
         </h2>
         {generatedImages.length > 0 && (
           <p className="text-purple-100 text-sm mt-1">
-            Prompt: "{generatedImages[0]?.prompt}"
+            提示词："{generatedImages[0]?.prompt}"
           </p>
         )}
       </div>
@@ -65,10 +98,10 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
               </svg>
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Waiting for Image Generation
+              等待图像生成
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Enter image description on the left and select a Hugging Face model, then click the generate button to start creating
+              在左侧输入图像描述并选择 Hugging Face 模型，然后点击生成按钮开始创建
             </p>
           </div>
         ) : (
@@ -81,7 +114,7 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Generating {elapsedSeconds.toFixed(1)}s</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">生成中 {elapsedSeconds.toFixed(1)}秒</p>
                       </div>
                     </div>
                   ) : generatedImages[0]?.imageUrl ? (
@@ -158,10 +191,10 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
                     {generatedImages[0]?.platform || 'Hugging Face'}
                   </h4>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                   Model used:  {generatedImages[0]?.model || '--'}
+                   使用的模型：  {generatedImages[0]?.model || '--'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                   Generation time: {isClient && generatedImages[0] ? generatedImages[0].timestamp.toLocaleTimeString() : '--'}
+                   生成时间： {isClient && generatedImages[0] ? generatedImages[0].timestamp.toLocaleTimeString() : '--'}
                   </p>
                 </div>
               </div>
