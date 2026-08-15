@@ -1,13 +1,13 @@
 /**
  * 图像生成 API 端点（动态路由）
  * 调用 Gradio API 生成图像
- * 
+ *
  * 路由：/api/v1/modelscope/:modelId
- * 
+ *
  * API 流程：
  * 1. POST 请求提交生成任务，获取 EVENT_ID
  * 2. 轮询 GET 请求获取生成结果
- * 
+ *
  * 参数：
  * - modelId: 模型 ID（从 URL 路径中获取）
  * - prompt: 提示词
@@ -128,7 +128,7 @@ export async function POST(
   if (!modelId) {
     return NextResponse.json(
       { error: '缺少模型 ID' },
-      { 
+      {
         status: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -146,7 +146,7 @@ export async function POST(
     if (!prompt) {
       return NextResponse.json(
         { error: '提示词不能为空' },
-        { 
+        {
           status: 400,
           headers: {
             'Access-Control-Allow-Origin': '*',
@@ -170,9 +170,9 @@ export async function POST(
     });
   } catch (err) {
     console.error('图像生成错误:', err);
-    
+
     const errorMessage = err instanceof Error ? err.message : '生成失败';
-    
+
     return NextResponse.json(
       {
         error: errorMessage,

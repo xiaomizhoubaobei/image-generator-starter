@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
   const response = NextResponse.next();
-  
+
   // 只在生产环境启用 HSTS
   // 避免在开发环境影响本地开发（通常使用 HTTP）
   if (process.env.NODE_ENV === 'production') {
@@ -15,13 +15,13 @@ export function proxy(request: NextRequest) {
       'max-age=31536000; preload'
     );
   }
-  
+
   // 其他安全头（所有环境都启用）
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
-  
+
   return response;
 }
 

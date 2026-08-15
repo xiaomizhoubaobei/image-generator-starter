@@ -45,8 +45,8 @@ $:
                     - mkdir -p root/.codebuddy
                     - curl -o root/.codebuddy/models.json https://astrbot.mizhoubaobei.top/astrbot.json
                     - echo "已创建 root/.codebuddy 文件夹并下载 models.json"
-                
-              
+
+
               - name: 安装iflow智能体
                 script:
                     - chmod +x /workspace/install_agents.sh
@@ -58,11 +58,11 @@ $:
             - https://cnb.cool/XMZZUZHI/key/-/blob/main/Github.yml
           stages:
             - name: 同步到GitHub
-              image: tencentcom/git-sync 
+              image: tencentcom/git-sync
               settings:
                 target_url: https://github.com/xiaomizhoubaobei/image-generator-starter.git
                 auth_type: https
-                username: ${GIT_USERNAME} 
+                username: ${GIT_USERNAME}
                 password: ${GIT_ACCESS_TOKEN}
                 branch: main
                 git_user: ${GIT_USERNAME}

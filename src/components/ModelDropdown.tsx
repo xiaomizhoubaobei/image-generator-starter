@@ -1,7 +1,7 @@
 /**
  * 模型选择下拉框组件
  * 提供按平台分组的模型选择界面
- * 
+ *
  * 功能：
  * - 按平台分组显示模型列表
  * - 支持展开/收起平台分组
@@ -10,20 +10,20 @@
  * - 点击外部自动关闭下拉框
  * - 滚动支持（最大高度限制）
  * - 平台间分隔线
- * 
+ *
  * Props：
  * - models: 模型选项列表
  * - selected: 当前选中的模型 ID
  * - onSelect: 模型选择回调函数
  * - disabled: 是否禁用整个下拉框
- * 
+ *
  * ModelOption 接口：
  * - id: 模型唯一标识
  * - name: 模型显示名称
  * - value: 模型值（用于 API 调用）
  * - platform: 所属平台
  * - disabled: 是否禁用该模型
- * 
+ *
  * 特性：
  * - 使用 TDesign React 的 Dialog 组件显示提示信息
  * - 响应式设计，支持深色模式
@@ -95,9 +95,9 @@ export default function ModelDropdown({ models, selected, onSelect, disabled }: 
 
   // Toggle platform expansion
   const togglePlatform = (platform: string) => {
-    setExpanded(prev => 
-      prev.includes(platform) 
-        ? prev.filter(p => p !== platform) 
+    setExpanded(prev =>
+      prev.includes(platform)
+        ? prev.filter(p => p !== platform)
         : [...prev, platform]
     );
   };
@@ -146,7 +146,7 @@ export default function ModelDropdown({ models, selected, onSelect, disabled }: 
             return (
               <div key={platform}>
                 {/* Platform Header */}
-                <div 
+                <div
                   className="px-4 py-3 shadow-sm cursor-pointer bg-white dark:bg-gray-700"
                   onClick={() => togglePlatform(platform)}
                 >
@@ -209,4 +209,4 @@ export default function ModelDropdown({ models, selected, onSelect, disabled }: 
       </Dialog>
     </div>
   );
-} 
+}

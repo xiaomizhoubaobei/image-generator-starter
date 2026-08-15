@@ -63,15 +63,15 @@ Deploy with EdgeOne Pages.
    ```env
    # Hugging Face API Token
    HF_TOKEN=your_huggingface_token_here
-   
-   # Nebius API Token  
+
+   # Nebius API Token
    NEBIUS_TOKEN=your_nebius_token_here
-   
+
    # Replicate API Token
    REPLICATE_TOKEN=your_replicate_token_here
 
    # OPENAI API Key
-   OPENAI_API_KEY=your_openai_api_key_here   
+   OPENAI_API_KEY=your_openai_api_key_here
 
    # FAL API Key
    FAL_KEY=your_fal_key_here

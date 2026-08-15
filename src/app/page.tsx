@@ -1,7 +1,7 @@
 /**
  * 图像生成器主页组件
  * 提供用户界面用于输入提示词并生成 AI 图像
- * 
+ *
  * 功能：
  * - 文本输入框：用户输入图像描述提示词
  * - 模型选择器：选择不同的 AI 图像生成模型
@@ -11,13 +11,13 @@
  * - 示例提示词：提供预设的示例提示词供快速使用
  * - 加载状态：显示生成进度和耗时
  * - 错误处理：显示生成失败的错误信息
- * 
+ *
  * 支持的平台：
  * - ModelScope：通过 /api/v1/modelscope/:modelId API 端点调用
- * 
+ *
  * 支持的模型：
  * - Z-Image：基于 Gradio API 的图像生成模型
- * 
+ *
  * 状态管理：
  * - inputValue：输入的提示词文本
  * - selectedModel：当前选择的模型
@@ -25,7 +25,7 @@
  * - isGenerating：是否正在生成图像
  * - elapsedSeconds：生成耗时
  * - imageLoadError：图像加载错误状态
- * 
+ *
  * API 调用：
  * - 开发环境：POST /api/v1/modelscope/:modelId，GET /api/v1/token-status
  * - 生产环境（Node Functions）：POST /v1/modelscope/:id，GET /v1/token-status
@@ -125,7 +125,7 @@ export default function Home() {
   const models = useMemo(() => {
     return baseModels.map((m) => {
       let disabled = m.disabled;
-   
+
       if (m.platform === 'Hugging Face') {
         disabled = !hasHfToken;
       }
@@ -179,10 +179,10 @@ export default function Home() {
     if (!prompt.trim() || isGenerating) return;
 
     setIsGenerating(true);
-    
+
     // Get currently selected model info
     const modelInfo = models.find(m => m.id === selectedModel && !m.disabled);
-    
+
     if (!modelInfo) {
       // No valid model available
       setGeneratedImages([{ id:`${Date.now()}`, platform:'', model:'', prompt:prompt, imageUrl:'', timestamp:new Date(), error:'No model available', isLoading:false }]);
@@ -223,7 +223,7 @@ export default function Home() {
         console.error('JSON parsing error:', jsonError);
         const responseText = await res.text();
         console.error('Response text:', responseText);
-        
+
         setGeneratedImages([
           {
             ...loadingImage,
@@ -234,10 +234,10 @@ export default function Home() {
         ]);
         return;
       }
-      
+
       if (!res.ok || data.error) {
         const errorMessage = data.error || `HTTP error: ${res.status}`;
-        
+
         setGeneratedImages([
           {
             ...loadingImage,
@@ -253,7 +253,7 @@ export default function Home() {
         } else {
           imageUrl = `data:image/png;base64,${data.imageData}`;
         }
-        
+
         setGeneratedImages([
           {
             ...loadingImage,
@@ -274,7 +274,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error(`${displayPlatformName} generation failed:`, error);
-      
+
       setGeneratedImages([{
         ...loadingImage,
         imageUrl: '',
@@ -290,7 +290,7 @@ export default function Home() {
   const downloadImage = async (imageUrl: string, filename: string) => {
     try {
       setImageLoading(true);
-      
+
       // 如果是 data URL，直接下载
       if (imageUrl.startsWith('data:')) {
         const link = document.createElement('a');
@@ -301,13 +301,13 @@ export default function Home() {
         document.body.removeChild(link);
         return;
       }
-      
+
       // 如果是在线图片，先获取图片数据
       const response = await fetch(imageUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch image: ${response.status}`);
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -317,7 +317,7 @@ export default function Home() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
     } catch (error) {
       console.error('Download failed:', error);
       alert('下载失败，请重试');
@@ -338,13 +338,13 @@ export default function Home() {
       }
       return 'png'; // 默认格式
     }
-    
+
     // 从 URL 中检测格式
     const url = imageUrl.toLowerCase();
     if (url.includes('.jpg') || url.includes('.jpeg')) return 'jpg';
     if (url.includes('.png')) return 'png';
     if (url.includes('.webp')) return 'webp';
-    
+
     return 'png'; // 默认格式
   };
 
@@ -363,7 +363,7 @@ export default function Home() {
 
   const examplePrompts = [
     "一只可爱的橙色小猫在花园里玩耍",
-    "未来城市夜景，霓虹灯闪烁", 
+    "未来城市夜景，霓虹灯闪烁",
     "超现实主义场景：星空下漂浮的书籍，下方沉睡的孩子",
   ];
 
@@ -406,16 +406,16 @@ export default function Home() {
        {/* Main Content Area - Left Right Layout */}
        <main className="max-w-7xl mx-auto px-4 py-8">
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
-           
+
            {/* Left Side - Input and Model Selection */}
            <div className="space-y-6">
-             
+
              {/* Text Input Card */}
              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                  图像描述
                </h2>
-               
+
                <form onSubmit={handleSubmit} className="space-y-4">
                  <div>
                    <textarea
@@ -432,7 +432,7 @@ export default function Home() {
                      }}
                    />
                  </div>
-                 
+
                  <div className="flex items-start justify-between">
                    <div className="text-sm text-gray-500 dark:text-gray-400 self-start">
                      按 Enter 生成，Shift + Enter 换行
@@ -483,7 +483,7 @@ export default function Home() {
                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Model Selection
                </h2>
-               
+
                <div className="space-y-4">
                  <div className="space-y-2">
                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">

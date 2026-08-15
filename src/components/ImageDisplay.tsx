@@ -1,7 +1,7 @@
 /**
  * 图像显示组件
  * 用于展示 AI 生成的图像结果
- * 
+ *
  * 功能：
  * - 显示生成的图像（支持加载状态和错误状态）
  * - 显示加载进度和耗时
@@ -9,7 +9,7 @@
  * - 显示图像元数据（平台、模型、生成时间）
  * - 图像加载错误处理和重试功能
  * - 鼠标悬停时显示下载按钮
- * 
+ *
  * Props：
  * - generatedImages: 生成的图像列表
  * - isClient: 是否在客户端渲染
@@ -23,7 +23,7 @@
  * - onImageError: 图像加载失败回调
  * - getImageFormat: 获取图像格式的函数
  * - generateFilename: 生成文件名的函数
- * 
+ *
  * 显示状态：
  * - 空状态：显示"等待图像生成"提示
  * - 加载中：显示加载动画和耗时
@@ -184,7 +184,7 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Footer / Info Section */}
                 <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
                   <h4 className="text-sm font-medium text-gray-900 dark:text-white">
@@ -206,4 +206,4 @@ const ImageDisplay: React.FC<ImageDisplayProps> = ({
   );
 };
 
-export default ImageDisplay; 
+export default ImageDisplay;
