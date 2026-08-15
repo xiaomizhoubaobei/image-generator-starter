@@ -40,7 +40,7 @@ Deploy with EdgeOne Pages.
 ### Requirements
 
 - Node.js 18.0 or higher
-- npm or yarn package manager
+- pnpm package manager
 - Valid AI platform API tokens
 
 ### Installation Steps
@@ -53,9 +53,7 @@ Deploy with EdgeOne Pages.
 
 2. **Install Dependencies**
    ```bash
-   npm install
-   # or
-   yarn install
+   pnpm install
    ```
 
 3. **Configure Environment Variables**
@@ -81,9 +79,7 @@ Deploy with EdgeOne Pages.
 
 4. **Start Development Server**
    ```bash
-   npm run dev
-   # or
-   yarn dev
+   pnpm dev
    ```
 
 5. **Access the Application**

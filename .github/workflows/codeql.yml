@@ -45,16 +45,16 @@ jobs:
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: 22
-        cache: yarn
+        cache: pnpm
 
-    - name: 启用 Yarn
+    - name: 启用 pnpm
       run: corepack enable
 
     - name: 安装依赖
-      run: yarn install --frozen-lockfile
+      run: pnpm install --frozen-lockfile
 
     - name: 构建项目
-      run: yarn build
+      run: pnpm build
 
     - name: 执行 CodeQL 分析
       uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6

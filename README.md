@@ -40,7 +40,7 @@
 ### 环境要求
 
 - Node.js 18.0 或更高版本
-- npm 或 yarn 包管理器
+- pnpm 包管理器
 - 有效的AI平台API令牌
 
 ### 安装步骤
@@ -53,9 +53,7 @@
 
 2. **安装依赖**
    ```bash
-   npm install
-   # 或
-   yarn install
+   pnpm install
    ```
 
 3. **配置环境变量**
@@ -81,9 +79,7 @@
 
 4. **启动开发服务器**
    ```bash
-   npm run dev
-   # 或
-   yarn dev
+   pnpm dev
    ```
 
 5. **访问应用**
