@@ -27,6 +27,6 @@
     "@types/react-dom": "^19",
     "baseline-browser-mapping": "^2.10.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^7"
   }
 }
